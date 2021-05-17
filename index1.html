@@ -1,0 +1,285 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>中国象棋设计&实现</title>
+    <script type="text/javascript" src="book.js"></script>
+    <script type="text/javascript" src="position.js"></script>
+    <script type="text/javascript" src="search.js"></script>
+    <script type="text/javascript" src="board.js"></script>
+    <script type="text/javascript" src="cchess.js"></script>
+
+    <style type="text/css">
+        body {
+            background: url("../中国象棋程序设计&实现/skin/skin3.jpg");
+
+        }
+
+        span.td {
+            display: inline-block;
+        }
+
+        /*选择项的标题*/
+        div.label {
+            font-size: 48px;
+            padding: 12px;
+        }
+
+
+        select {
+            font-size: 14px;
+            width: 108px;
+            padding: 2px;
+        }
+
+        option {
+            font-size: 48px;
+        }
+
+
+        /*动画,音效字体大小*/
+        label {
+            font-size: 48px;    
+        }
+
+        .author {
+            text-align: center;
+            font-size: 48px;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-weight: 800;
+            margin-top: 50px;
+        }
+
+        /* 套在两个按钮外层的div之外,目的是使用弹性模型使其横排 */
+        #reBtn{
+            display: flex;                  /*使用弹性模型*/
+            justify-content:center;         /*居中*/
+            /* height: 2.5%; */
+        }
+        /* 作用于两个按钮各自的外壳div,保证两者的间距 */
+        #reBtn1,#reBtn2{
+            margin-left: 10%;
+            margin-right: 10%;
+            width: 100%;
+        }
+        /* 作用于"重新开始"按钮本体 */
+        #restart{
+            background-color: #ec4016;
+            border-radius: 40px;
+            font-size: 48px;
+            width: 120%;
+            height: 100%;
+ 
+        }
+        /* 作用于"悔棋"按钮本体 */
+        #retract{
+            border-radius: 40px;
+            font-size: 48px;
+            width: 120%;
+            height: 100%;
+        }
+
+
+        /*作用于选择框内文字*/
+        .selectArea{
+            padding:10px;
+        }
+
+        /* 控制选择方框大小 */
+        .checkbox{
+            width: 40px;
+            height: 40px;
+        }
+
+        /* 为不同的部件添加半透明背景色,并留出空隙 */
+        .devide{
+            background-color: #00000025;
+            margin-top: 40px;
+            padding-bottom: 10px;
+            border-radius: 25px;
+        }
+
+        #skinBtn{
+            margin-top: 5%;
+            margin-bottom: 5%;
+            margin-left: 80%;
+        }
+    </style>
+</head>
+
+<body>
+    <!--标题-->
+    <div style="text-align:center;font-size:64px;font-family:黑体">中国象棋·设计与实现</div>
+
+    <!--标题和主体的空隙,中间插入换肤按钮-->
+    <!--换肤模块-->
+    <div id="skinBtn">
+        <button id="skin_change" onclick="skin_change()" style="font-size: 40px; border-radius: 10px; background-color: antiquewhite;">更换皮肤</button>
+    </div>
+    <!--/换肤模块-->
+
+    <!--棋盘主体-->
+    <div style="text-align:center;">
+        <span class="td">
+            <div id="container"></div>              <!--棋盘,用id来和程序代码产生绑定-->
+        </span>
+    </div>
+    <!--/棋盘主体-->
+
+
+    <!--按钮主体-->
+    <div style="text-align:center;white-space:nowrap">
+
+
+        <!--重开&悔棋模块-->
+        <div style="height: 100px;"></div>        <!--上间距-->
+        <div id="reBtn">
+            <div id="reBtn1" style="padding-top:2px"><input  id="restart"  type="button" class="button" value="重新开始" onclick="restart_click()"></div>
+            <div id="reBtn2" style="padding-top:2px"><input id="retract" type="button" class="button" value="悔棋" onclick="retract_click()"></div>
+        </div>
+        <!--重开&悔棋模块-->
+
+ 
+        <span class="td" style="vertical-align:top;">
+            <div >
+                <div class="devide">
+                    <!--切换交战模块-->
+                    <div class="label">选择对弈模式</div>
+                    <div >
+                        <select id="selMoveMode" size="3" style="width: auto;">
+                            <option class="selectArea" selected value="0">玩家先走</option>
+                            <option class="selectArea" value="1">电脑先走</option>
+                            <option class="selectArea" value="2">不用电脑</option>
+                        </select>
+                    </div>
+                    <!--/切换交战模块-->
+                </div>
+                
+                <div class="devide">
+                    <!--残局控制模块-->
+                    <div class="label">选择开局 / 残局</div>
+                    <div class="selectArea">
+                        <select id="selHandicap" style="width: auto; font-size: 48px;">
+                            <option class="selectArea" selected value="0">完整局面开局</option>
+                            <option class="selectArea" value="1">残局开局</option>
+                        </select>
+                    </div>
+                    <!--/残局控制模块-->
+                </div>
+
+                <div class="devide">
+                    <!--难度分级模块-->
+                    <div class="label">电脑水平</div>
+                    <div>
+                        <select id="selLevel" size="3" onchange="level_change()" style="width: auto;">
+                            <option selected value="0">入门</option>
+                            <option class="selectArea" value="1">中级</option>
+                            <option class="selectArea" value="2">大师</option>
+                        </select>
+                    </div>
+                    <div style="height:12px"></div>
+                    <!--/难度分级模块-->
+                </div>
+
+                <div class="devide">
+                    <!--音效,视效模块-->
+                    <div>
+                        <input type="checkbox" class="checkbox" id="chkAnimated" checked onclick="board.animated = checked">
+                            <label for="chkAnimated">动画</label>
+                        </input>
+                    </div>
+                    <div>
+                        <input type="checkbox" class="checkbox" checked onclick="board.setSound(checked)">
+                            <label for="chkSound">音效</label>
+                        </input>
+                        </div>
+                    <div style="height:60px"></div>
+                    <!--/音效,视效模块-->
+                </div>
+            </div>
+        </span>
+
+        <div class="author">太原工业学院 计算机工程系 172054118 石家俊</div>
+    </div>
+
+
+
+    <script type="text/javascript">
+        "use strict";
+
+
+
+
+        //传入的实参Container 就是id="container"的<div>,采用这种方式将JS代码(绘制图像功能)和前端页面连结起来
+        var board = new Board(container, "images/", "sounds/");
+        board.setSearch(16);
+        board.millis = 10;
+        board.computer = 1;
+
+
+
+        //难度分布,分别搜索10,100,1000ms
+        function level_change() {
+            board.millis = Math.pow(10, selLevel.selectedIndex + 1);
+        }
+
+        //重新开局选择:残局/全局
+        function restart_click() {
+
+            board.computer = 1 - selMoveMode.selectedIndex;   //返回被选择项的索引号.
+
+            var random = Math.floor(Math.random() * PUZZLE_LIST.length);//获取一个随机数,位于残局表内
+            if (selHandicap.selectedIndex) board.restart(PUZZLE_LIST[random]);      //玩家选择残局开局
+            else board.restart(PUZZLE_LIST[0]);           //玩家选择完整开局
+
+
+        }
+
+        //悔棋
+        function retract_click() {
+            board.retract();
+        }
+
+
+        //局面回顾 函数
+        var mvli;       ////在刷新前将本局所有的mvlist备份
+        function review_click() {
+            // selMoveList.options.length = 1;
+            // selMoveList.selectedIndex = 1;
+            board.computer = -1;              //表示采用人-人对战 
+            mvli = board.pos.mvList;             //在刷新前将mvlist安全备份
+            board.restart(PUZZLE_LIST[0]);    //重新开始
+        }
+
+        var index = 1;       //记录当前的走法在 mvli 中的下标
+        function backstep_click() {
+            retract_click();    //执行一步悔棋
+            index--;   //step退1位
+        }
+
+        function nextstep_click() {
+            board.pos.makeMove(mvli[index]);    //执行一步
+            index++;                            //下标进1位
+        }
+
+        // 实现更换皮肤功能
+        function skin_change() {
+            var n = Math.floor(Math.random() * 3);    //生成一个值=0/1/2的随机数
+            switch (n) {
+                case 0:
+                    document.body.style.backgroundImage = "url(../中国象棋程序设计&实现/skin/skin1.jpg)";
+                    break;
+                case 1:
+                    document.body.style.backgroundImage = "url(../中国象棋程序设计&实现/skin/skin2.jpg)";
+                    break;
+                case 2:
+                    document.body.style.backgroundImage = "url(../中国象棋程序设计&实现/skin/skin3.jpg)";
+                    break;
+                default:
+                    break;
+            }
+        }
+    </script>
+</body>
+
+</html>
